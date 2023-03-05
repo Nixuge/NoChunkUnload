@@ -8,7 +8,8 @@ import java.util.Map;
 
 @IFMLLoadingPlugin.Name("nochunkunload")
 public class CoreMod implements IFMLLoadingPlugin {
-
+    //TODO: Make as NOT CoreMod
+    //TODO: Add a Config screen (& config commands) to toggle on/off the mod
     public CoreMod() {
         MixinBootstrap.init();
     }
