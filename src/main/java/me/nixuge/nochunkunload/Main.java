@@ -1,14 +1,13 @@
 package me.nixuge.nochunkunload;
 
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = Example.MOD_ID)
-public class Example {
+@net.minecraftforge.fml.common.Mod(modid = Main.MOD_ID)
+public class Main {
     public static final String MOD_ID = "nochunkunload";
 
-    @Mod.EventHandler
+    @net.minecraftforge.fml.common.Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
-        System.out.println("Hello world!");
+        System.out.println("Successfully loaded NoChunkUnload");
     }
 }

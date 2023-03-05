@@ -6,26 +6,19 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(ChunkProviderClient.class)
 public class FuckChunkLoad {
-    //@Inject(method = "unloadChunk", at = @At("HEAD"))
-    //private void init(CallbackInfo ci) {
-    //    System.out.println("FUCK MC!!");
-    //}
-
     /**
-     * @author
-     * @reason
+     * @author Nixuge
+     * @reason Overwrite vanilla unloadChunk function
      */
     @Overwrite
-    public void unloadChunk(int p_73234_1_, int p_73234_2_) {
-        System.out.println("LMAO NO UNLOAD ");
-    }
+    public void unloadChunk(int p_73234_1_, int p_73234_2_) {}
+
     /**
-     * @author
-     * @reason
+     * @author Nixuge
+     * @reason Overwrite vanilla unloadQueuedChunks function
      */
     @Overwrite
     public boolean unloadQueuedChunks() {
-        System.out.println("QUEUED NO UNLOAD ");
         return false;
     }
 }
