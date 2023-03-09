@@ -1,17 +1,19 @@
-package me.nixuge.nochunkunload.core;
+package me.nixuge.nochunkunload.mixins;
 
+import me.nixuge.nochunkunload.McMod;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.Mixins;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 
-@IFMLLoadingPlugin.Name("nochunkunload")
-public class CoreMod implements IFMLLoadingPlugin {
-    //TODO: Make as NOT CoreMod
-    //TODO: Add a Config screen (& config commands) to toggle on/off the mod
-    public CoreMod() {
+@IFMLLoadingPlugin.MCVersion("1.8.9")
+public class MixinLoader implements IFMLLoadingPlugin {
+    public MixinLoader() {
         MixinBootstrap.init();
+        Mixins.addConfiguration("mixins." + McMod.MOD_ID + ".json");
+        MixinEnvironment.getDefaultEnvironment().setSide(MixinEnvironment.Side.CLIENT);
     }
 
     @Override
@@ -24,14 +26,13 @@ public class CoreMod implements IFMLLoadingPlugin {
         return null;
     }
 
-    @Nullable
     @Override
     public String getSetupClass() {
         return null;
     }
 
     @Override
-    public void injectData(Map<String, Object> data) {
+    public void injectData(final Map<String, Object> data) {
     }
 
     @Override

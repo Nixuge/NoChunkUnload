@@ -1,11 +1,10 @@
 {
   "compatibilityLevel": "JAVA_8",
-  "package": "me.nixuge.nochunkunload.mixin",
+  "package": "me.nixuge.nochunkunload.mixins",
   "refmap": "refmap.nochunkunload.json",
   "mixins": [],
   "client": [
-    "FuckChunkLoad",
-    "InitMixin"
+    "blocks.FuckChunkLoad"
   ],
   "server": []
 }

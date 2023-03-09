@@ -51,6 +51,9 @@ dependencies {
         exclude module: 'gson'
     }
     annotationProcessor 'org.spongepowered:mixin:0.7.11-SNAPSHOT'
+
+    compileOnly 'org.projectlombok:lombok:1.18.18'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
 }
 
 processResources {
