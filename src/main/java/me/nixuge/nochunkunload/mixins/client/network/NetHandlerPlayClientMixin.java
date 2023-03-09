@@ -82,29 +82,7 @@ public class NetHandlerPlayClientMixin {
         }
     }
     /*
-     * Due to a problem in Mixin 0.7.11 (or pre-0.8 really), you can't call a function
-     * in a Mixin class from another Mixin class.
-     * This basically prevents me from having this work and is pretty much not doable rn.
-     *
-     * POSSIBLE SOLUTIONS:
-     * - Get 0.8 Mixins working on 1.8.9 (would be the best)
-     *
-     * - Inject directly onto S26PacketMapChunkBulk on both the constructor(List<Chunk>) and
-     * - the readPacketData(PacketBuffer) methods (either Inject or ModifyArg or ModifyVariable or smth)
-     * -- But I couldn't inject into the constructor, so won't right now.
-     * -- (+ I'm pretty sure having no chunks in one of those packets would cause issues anyways)
-     *
-     * - Go the suboptimal way and ONLY process S26PacketMapChunkBulk packets if none of the chunks
-     * - inside it are already loaded (could cause some chunks to not load)
-     *
-     *  - (One I'm going with rn) Basically just add a Mixin on all the submethods:
-     *  -- doPreChunk (unneeded)
-     *  -- invalidateBlockReceiveRegion
-     *  -- fillChunk
-     *  -- markBlockRangeForRenderUpdate
-     *
-     * For now, this code is staying here unused.
-     * It can be reactivated at any time by just uncommenting the @ModifyVariable line on top of it.
+     * The function below is supposed to
      */
 
     private int func_180737_a(int p_180737_0_, boolean p_180737_1_, boolean p_180737_2_) {
@@ -116,9 +94,37 @@ public class NetHandlerPlayClientMixin {
     }
 
 
+    private S26PacketMapChunkBulk createNewPacket(
+            boolean isOverworld, int bufferSize,
+            int[] xPositions, int[] zPositions,
+            S21PacketChunkData.Extracted[] chunksData) {
+
+        PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
+        buf.writeBoolean(isOverworld);
+        buf.writeVarIntToBuffer(chunksData.length);
+
+        int lvt_2_2_;
+        for(lvt_2_2_ = 0; lvt_2_2_ < xPositions.length; ++lvt_2_2_) {
+            buf.writeInt(xPositions[lvt_2_2_]);
+            buf.writeInt(zPositions[lvt_2_2_]);
+            buf.writeShort((short)(chunksData[lvt_2_2_].dataSize & '\uffff'));
+        }
+
+        for(lvt_2_2_ = 0; lvt_2_2_ < xPositions.length; ++lvt_2_2_) {
+            buf.writeBytes(chunksData[lvt_2_2_].data);
+        }
+
+        S26PacketMapChunkBulk newPacket = new S26PacketMapChunkBulk();
+        try {
+            newPacket.readPacketData(buf);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return newPacket;
+    }
 
 
-    @ModifyVariable(method = "handleMapChunkBulk", at = @At("HEAD"))
+    // @ModifyVariable(method = "handleMapChunkBulk", at = @At("HEAD"))
     public S26PacketMapChunkBulk mapChunkBulk(S26PacketMapChunkBulk p_handleMapChunkBulk_1_) throws IOException {
         // Make a list to store valid chunk indexes
 
@@ -128,8 +134,10 @@ public class NetHandlerPlayClientMixin {
 
         List<Integer> validIndexes = new ArrayList<>();
         for (int i = 0; i < p_handleMapChunkBulk_1_.getChunkCount(); ++i) {
-            if (!this.cache.isSavedChunk(p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i))) {
+            if (!this.cache.isSavedChunk2(p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i))) {
                 validIndexes.add(i);
+            } else {
+                this.cache.addSavedChunk2(p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i));
             }
         }
 
@@ -137,74 +145,38 @@ public class NetHandlerPlayClientMixin {
         if (newSize == 0)
             return new S26PacketMapChunkBulk();
 
-
-        System.out.println("Newsize: " + newSize);
-        for (int i : validIndexes) {
-            //System.out.println("Valid index: " + i);
-        }
-
         // Get data for current packet
         PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
-        PacketBuffer buf2 = new PacketBuffer(Unpooled.buffer());
         p_handleMapChunkBulk_1_.writePacketData(buf);
-        p_handleMapChunkBulk_1_.writePacketData(buf2);
+//
 
-        PacketBuffer newBuf = new PacketBuffer(Unpooled.buffer());
-        //System.out.println("Changed var stage 1!!");
+        boolean isOverworld = buf.readBoolean();
+        int bufferSize = buf.readVarIntFromBuffer();
+        int[] xPositions = new int[newSize];
+        int[] zPositions = new int[newSize];
+        S21PacketChunkData.Extracted[] chunksData = new S21PacketChunkData.Extracted[newSize];
 
-        boolean isOverworld = buf.readBoolean(); //isOverworld
-        newBuf.writeBoolean(isOverworld); //isOverworld
-
-        int size = buf.readVarIntFromBuffer(); //size (old read)
-        newBuf.writeVarIntToBuffer(size); //size (new write)
-
-        S21PacketChunkData.Extracted[] chunksData = new S21PacketChunkData.Extracted[size];
-
-        //System.out.println("Changed var stage 2!!");
-        int newIndex = 0;
-        for(int i = 0; i < size; ++i) {
-//            if (!validIndexes.contains(i)) {
-//                //System.out.println("Skipped iter!!");
-//                //skip over the buffer instruction
-//                buf.readInt(); buf.readInt();buf.readShort();
-//                continue;
-//            }
-            //System.out.println("Ran iter!!");
-            newBuf.writeInt(buf.readInt()); //xPos
-            newBuf.writeInt(buf.readInt()); //zPos
-            chunksData[newIndex] = new S21PacketChunkData.Extracted();
-            short dataSize = buf.readShort();
-            newBuf.writeShort(dataSize & '\uffff'); //dataSize
-            chunksData[newIndex] = new S21PacketChunkData.Extracted();
-            chunksData[newIndex].dataSize = dataSize & '\uffff';
-            chunksData[newIndex].data = new byte[this.func_180737_a(Integer.bitCount(chunksData[newIndex].dataSize), isOverworld, true)];
-
-            newIndex++;
+        int actualI = 0;
+        for(int i = 0; i < bufferSize; ++i) {
+            if (!validIndexes.contains(i)) {
+                buf.readInt(); buf.readInt(); buf.readShort();
+                continue;
+            }
+            xPositions[actualI] = buf.readInt();
+            zPositions[actualI] = buf.readInt();
+            chunksData[actualI] = new S21PacketChunkData.Extracted();
+            chunksData[actualI].dataSize = buf.readShort() & '\uffff';
+            chunksData[actualI].data = new byte[this.func_180737_a(Integer.bitCount(chunksData[actualI].dataSize), isOverworld, true)];
+            actualI++;
         }
 
-        //System.out.println("Changed var stage 3!!");
-        newIndex = 0;
-        System.out.println("Size: " + size + " NewSize: " + newSize);
-        for(int i = 0; i < size; ++i) {
-            //System.out.println("iteration rn");
-//            if (!validIndexes.contains(i)) {
-//                //System.out.println("Skipped!");
-//                buf.readBytes(chunksData[i].data); //skip over the buffer instruction
-//                continue;
-//            }
-            byte[] bt = buf.readBytes(chunksData[newIndex].data).array();
 
-            newBuf.writeBytes(bt);
-            newIndex++;
-        }
-        System.out.println("Changed var stage 4!!");
-
-        // instantiate the new packet and give it its needed values
-        S26PacketMapChunkBulk newPacket = new S26PacketMapChunkBulk();
-        newPacket.readPacketData(buf2);
-        System.out.println("Changed var stage FINAL!!");
-        System.out.println("new count: " + newPacket.getChunkCount());
-
-        return newPacket;
+        S26PacketMapChunkBulk pack = createNewPacket(
+                isOverworld,
+                bufferSize,
+                xPositions, zPositions,
+                chunksData
+        );
+        return pack;
     }
 }
