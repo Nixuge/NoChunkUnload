@@ -4,21 +4,14 @@ import me.nixuge.nochunkunload.McMod;
 import me.nixuge.nochunkunload.config.Cache;
 import me.nixuge.nochunkunload.mixins.server.S26PacketMapChunkBulkGetters;
 import me.nixuge.nochunkunload.mixins.server.S26PacketMapChunkBulkSetters;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.server.*;
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Mixin(NetHandlerPlayClient.class)
@@ -49,115 +42,82 @@ public class NetHandlerPlayClientMixin {
         }
     }
 
-
     // save already loaded chunks
-    private List<int[]> savedChunks = new ArrayList<>();
-
-    private boolean isSaved(int[] newChunk) {
-        //System.out.println("Hello isSaved called !");
-        for (int[] chunk : savedChunks) {
-            if (Arrays.equals(chunk, newChunk))
-                return true;
-        }
-        return false;
-    }
-
-    private boolean isSaved(int chunkX, int chunkZ) {
-        return isSaved(new int[]{chunkX, chunkZ});
-    }
-
     @Inject(method = "handleChunkData", at = @At("HEAD"), cancellable = true)
     public void chunkData(S21PacketChunkData p_handleChunkData_1_, CallbackInfo ci) {
         // If is a saved chunk
-        if (isSaved(p_handleChunkData_1_.getChunkX(), p_handleChunkData_1_.getChunkZ())) {
+        if (this.cache.isSavedChunk(p_handleChunkData_1_.getChunkX(), p_handleChunkData_1_.getChunkZ())) {
             if (cache.isWorldFrozen()) {
                 ci.cancel();
             }
             return;
         }
-        savedChunks.add(new int[]{p_handleChunkData_1_.getChunkX(), p_handleChunkData_1_.getChunkZ()});
+        this.cache.addSavedChunk(p_handleChunkData_1_.getChunkX(), p_handleChunkData_1_.getChunkZ());
     }
 
+    /*
+     * Due to a problem in Mixin 0.7.11 (or pre-0.8 really), you can't call a function
+     * in a Mixin class from another Mixin class.
+     * This basically prevents me from having this work and is pretty much not doable rn.
+     *
+     * POSSIBLE SOLUTIONS:
+     * - Get 0.8 Mixins working on 1.8.9 (would be the best)
+     *
+     * - Inject directly onto S26PacketMapChunkBulk on both the constructor(List<Chunk>) and
+     * - the readPacketData(PacketBuffer) methods (either Inject or ModifyArg or ModifyVariable or smth)
+     * -- But I couldn't inject into the constructor, so won't right now.
+     * -- (+ I'm pretty sure having no chunks in one of those packets would cause issues anyways)
+     *
+     * - Go the suboptimal way and ONLY process S26PacketMapChunkBulk packets if none of the chunks
+     * - inside it are already loaded (could cause some chunks to not load)
+     *
+     * For now, this code is staying here unused.
+     * It can be reactivated at any time by just uncommenting the @ModifyVariable line on top of it.
+     */
 
-    @ModifyVariable(method = "handleMapChunkBulk", at = @At("HEAD"))
+    // @ModifyVariable(method = "handleMapChunkBulk", at = @At("HEAD"))
     public S26PacketMapChunkBulk mapChunkBulk(S26PacketMapChunkBulk p_handleMapChunkBulk_1_) {
         // Make a list to store valid chunk indexes
-
         List<Integer> validIndexes = new ArrayList<>();
-        for(int i = 0; i < p_handleMapChunkBulk_1_.getChunkCount(); ++i) {
-            if (!isSaved(p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i))) {
+        for (int i = 0; i < p_handleMapChunkBulk_1_.getChunkCount(); ++i) {
+            if (!this.cache.isSavedChunk(p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i))) {
                 validIndexes.add(i);
             }
         }
 
         int newSize = validIndexes.size();
-        if (newSize == 0) {
-//            World world = Minecraft.getMinecraft().thePlayer.worldObj;
-//            Chunk owo = new Chunk(world, 0, 0);
-//            List<Chunk> arr = new ArrayList<>();
-//            arr.add(owo);
+        if (newSize == 0)
             return new S26PacketMapChunkBulk();
-        }
 
-        //return p_handleMapChunkBulk_1_;
-//
         // Get data for current packet
         boolean isOverworld = ((S26PacketMapChunkBulkGetters) p_handleMapChunkBulk_1_).isOverworld();
-        S21PacketChunkData.Extracted[] oldChunkData = ((S26PacketMapChunkBulkGetters) p_handleMapChunkBulk_1_).getChunksData();
+        S21PacketChunkData.Extracted[] oldChunkData = ((S26PacketMapChunkBulkGetters) p_handleMapChunkBulk_1_)
+                .getChunksData();
         int[] oldxPositions = ((S26PacketMapChunkBulkGetters) p_handleMapChunkBulk_1_).getxPositions();
         int[] oldzPositions = ((S26PacketMapChunkBulkGetters) p_handleMapChunkBulk_1_).getzPositions();
 
-            S21PacketChunkData.Extracted[] truc = new Owo(p_handleMapChunkBulk_1_).getOwo();
-//        // Make empty data for the new packet
-//        S21PacketChunkData.Extracted[] chunkData = new S21PacketChunkData.Extracted[newSize];
-//        int[] xPositions = new int[newSize];
-//        int[] zPositions = new int[newSize];
-//
-//        //
-//        int newIndex = 0;
-//        for (int index : validIndexes) {
-//            chunkData[newIndex] = oldChunkData[index];
-//            xPositions[newIndex] = oldxPositions[index];
-//            zPositions[newIndex] = oldzPositions[index];
-//            newIndex++;
-//        }
+        // Make empty data for the new packet
+        S21PacketChunkData.Extracted[] chunkData = new S21PacketChunkData.Extracted[newSize];
+        int[] xPositions = new int[newSize];
+        int[] zPositions = new int[newSize];
 
-        return p_handleMapChunkBulk_1_;
+        int newIndex = 0;
+        for (int index : validIndexes) {
+            chunkData[newIndex] = oldChunkData[index];
+            xPositions[newIndex] = oldxPositions[index];
+            zPositions[newIndex] = oldzPositions[index];
+            newIndex++;
+        }
 
         // instantiate the new packet and give it its needed values
-//        S26PacketMapChunkBulk newPacket = new S26PacketMapChunkBulk();
-//
-//        S26PacketMapChunkBulkSetters setter = ((S26PacketMapChunkBulkSetters) newPacket);
-//        setter.setChunks(chunkData);
-//        setter.setxPositions(xPositions);
-//        setter.setzPositions(zPositions);
-//        setter.setIsOverworld(isOverworld);
-//
-//
-//        return newPacket;
+        S26PacketMapChunkBulk newPacket = new S26PacketMapChunkBulk();
+
+        S26PacketMapChunkBulkSetters setter = ((S26PacketMapChunkBulkSetters) newPacket);
+        setter.setChunks(chunkData);
+        setter.setxPositions(xPositions);
+        setter.setzPositions(zPositions);
+        setter.setIsOverworld(isOverworld);
+
+        return newPacket;
     }
-
-
-        //SPLIT HERE
-        // NOTE:
-        // this isn't perfect, as if
-        // both already saved & unsaved chunks are in there
-        // it won't save new chunks
-        // however, marking it as complete
-//        for(int i = 0; i < p_handleMapChunkBulk_1_.getChunkCount(); ++i) {
-//            p_handleMapChunkBulk_1_.get
-//
-//        }
-//
-//
-//        if (cache.isWorldFrozen()) {
-//            for(int i = 0; i < p_handleMapChunkBulk_1_.getChunkCount(); ++i) {
-//                System.out.println("ALREADY SAVED TRY! " + p_handleMapChunkBulk_1_.getChunkX(i) + " " + p_handleMapChunkBulk_1_.getChunkZ(i));
-//                if (isSaved(p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i))) {
-//                    System.out.println("CONTAINS ALREADY SAVED CHUNK!!!!");
-//                    //ci.cancel();
-//                }
-//            }
-//        }
-
 }

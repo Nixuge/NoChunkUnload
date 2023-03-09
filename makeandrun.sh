@@ -6,10 +6,9 @@
 # - remove the .mixin folder from run/ (if not, runClient doesn't start at all)
 # - runClient task
 
-# EDIT:
-# For some reason can't run gradle tasks 
-# so this just removes the problematic folder and copies the mod
 
+./gradlew build
 rm run/mods/*
 rm -r run/.mixin.out
 mv build/libs/* run/mods/
+./gradlew runClient
