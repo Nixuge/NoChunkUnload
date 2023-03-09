@@ -3,8 +3,10 @@ package me.nixuge.nochunkunload;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import me.nixuge.nochunkunload.command.commands.CurrentChunkLoaded;
 import me.nixuge.nochunkunload.command.commands.FreezeWorld.FreezeWorld;
 import me.nixuge.nochunkunload.command.commands.FreezeWorld.UnfreezeWorld;
+import me.nixuge.nochunkunload.command.commands.ResetChunkLoaded;
 import me.nixuge.nochunkunload.command.commands.ToggleOff;
 import me.nixuge.nochunkunload.command.commands.ToggleOn;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.NoUnloadChunks;
@@ -14,6 +16,7 @@ import me.nixuge.nochunkunload.config.Config;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -62,6 +65,9 @@ public class McMod {
         ClientCommandHandler.instance.registerCommand(new ToggleOn(this.cache));
         ClientCommandHandler.instance.registerCommand(new ToggleOff(this.cache));
 
+        ClientCommandHandler.instance.registerCommand(new CurrentChunkLoaded(this.cache));
+        ClientCommandHandler.instance.registerCommand(new ResetChunkLoaded(this.cache));
+
         MinecraftForge.EVENT_BUS.register(
                 new Config(this.cache, this.configuration)
         );
@@ -69,6 +75,11 @@ public class McMod {
 
     @SubscribeEvent
     public void worldChange(PlayerEvent.PlayerChangedDimensionEvent event) {
+        this.cache.resetSavedChunks();
+    }
+
+    @SubscribeEvent
+    public void cg(WorldEvent.Unload event) {
         this.cache.resetSavedChunks();
     }
 }
