@@ -12,6 +12,7 @@ public class Config {
     private final Configuration configuration;
 
     private boolean chunksUnloadable;
+    private boolean worldFrozen;
 
     public Config(final Cache cache, final Configuration configuration) {
         this.cache = cache;
@@ -25,13 +26,21 @@ public class Config {
                 "Chunks Unloadable",
                 Configuration.CATEGORY_GENERAL,
                 false,
-                ""
+                "Allow chunks to be unloaded"
+        );
+        this.worldFrozen = this.configuration.getBoolean(
+                "World Frozen",
+                Configuration.CATEGORY_GENERAL,
+                false,
+                "Allow block change packets to be processed"
         );
 
         this.cache.setChunksUnloadable(this.chunksUnloadable);
+        this.cache.setWorldFrozen(this.worldFrozen);
         if (this.configuration.hasChanged()) {
             this.configuration.save();
         }
+
     }
 
     @SubscribeEvent
@@ -40,4 +49,7 @@ public class Config {
             this.loadConfiguration();
         }
     }
+
+    // TODO: make this actually work
+    // as it doesn't rn
 }

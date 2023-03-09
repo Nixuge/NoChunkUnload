@@ -4,7 +4,8 @@
   "refmap": "refmap.nochunkunload.json",
   "mixins": [],
   "client": [
-    "blocks.FuckChunkLoad"
+    "client.multiplayer.ChunkProviderClientMixin",
+    "client.network.NetHandlerPlayClientMixin"
   ],
   "server": []
 }

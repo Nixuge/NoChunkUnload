@@ -10,4 +10,5 @@ public class Cache {
         return this.chunksUnloadable;
     }
     private boolean chunksUnloadable = false;
+    private boolean worldFrozen = false;
 }

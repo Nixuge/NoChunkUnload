@@ -1,20 +1,20 @@
 package me.nixuge.nochunkunload.command.commands;
 
 
-import me.nixuge.nochunkunload.config.Cache;
 import me.nixuge.nochunkunload.MessageBuilder;
 import me.nixuge.nochunkunload.command.AbstractCommand;
+import me.nixuge.nochunkunload.config.Cache;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnloadChunks extends AbstractCommand {
+public class ToggleOff extends AbstractCommand {
     private final Cache cache;
 
-    public UnloadChunks(final Cache cache) {
-        super("unloadchunk");
+    public ToggleOff(final Cache cache) {
+        super("toggleoff");
 
         this.cache = cache;
     }
@@ -22,20 +22,15 @@ public class UnloadChunks extends AbstractCommand {
     @Override
     public List<String> getCommandAliases() {
         ArrayList<String> al = new ArrayList<>();
-        al.add("unloadchunks");
-        al.add("uc");
-        al.add("unloadc");
+        al.add("toff");
         return al;
     }
 
     @Override
     public void onCommand(final ICommandSender sender, final String[] args) {
-        if (this.cache.areChunksUnloadable()) {
-            this.tell(new MessageBuilder("Chunks are already unloadable.", EnumChatFormatting.GRAY));
-        } else {
-            this.cache.setChunksUnloadable(true);
+        this.cache.setChunksUnloadable(true);
+        this.cache.setWorldFrozen(false);
+        this.tell(new MessageBuilder("World now unfrozen & chunks unloadable", EnumChatFormatting.GRAY));
 
-            this.tell(new MessageBuilder("Chunks are now unloadable again.", EnumChatFormatting.GRAY));
-        }
     }
 }

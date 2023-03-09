@@ -1,4 +1,4 @@
-package me.nixuge.nochunkunload.mixins.blocks;
+package me.nixuge.nochunkunload.mixins.client.multiplayer;
 
 import me.nixuge.nochunkunload.McMod;
 import me.nixuge.nochunkunload.config.Cache;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChunkProviderClient.class)
-public class FuckChunkLoad {
+public class ChunkProviderClientMixin {
     private final Cache cache = McMod.getInstance().getCache();
 
     @Inject(method="unloadChunk", at = @At("HEAD"), cancellable = true)

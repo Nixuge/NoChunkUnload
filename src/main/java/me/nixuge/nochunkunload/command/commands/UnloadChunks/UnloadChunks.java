@@ -1,4 +1,4 @@
-package me.nixuge.nochunkunload.command.commands;
+package me.nixuge.nochunkunload.command.commands.UnloadChunks;
 
 
 import me.nixuge.nochunkunload.config.Cache;
@@ -10,11 +10,11 @@ import net.minecraft.util.EnumChatFormatting;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoUnloadChunks extends AbstractCommand {
+public class UnloadChunks extends AbstractCommand {
     private final Cache cache;
 
-    public NoUnloadChunks(final Cache cache) {
-        super("nounloadchunk");
+    public UnloadChunks(final Cache cache) {
+        super("unloadchunk");
 
         this.cache = cache;
     }
@@ -22,20 +22,20 @@ public class NoUnloadChunks extends AbstractCommand {
     @Override
     public List<String> getCommandAliases() {
         ArrayList<String> al = new ArrayList<>();
-        al.add("nounloadchunks");
-        al.add("nuc");
-        al.add("nounloadc");
+        al.add("unloadchunks");
+        al.add("uc");
+        al.add("unloadc");
         return al;
     }
 
     @Override
     public void onCommand(final ICommandSender sender, final String[] args) {
         if (this.cache.areChunksUnloadable()) {
-            this.cache.setChunksUnloadable(false);
-            this.tell(new MessageBuilder("Chunks are now not unloadable.", EnumChatFormatting.GRAY));
+            this.tell(new MessageBuilder("Chunks are already unloadable.", EnumChatFormatting.GRAY));
         } else {
-            this.tell(new MessageBuilder("Chunks are already not unloadable.", EnumChatFormatting.GRAY));
+            this.cache.setChunksUnloadable(true);
 
+            this.tell(new MessageBuilder("Chunks are now unloadable again.", EnumChatFormatting.GRAY));
         }
     }
 }

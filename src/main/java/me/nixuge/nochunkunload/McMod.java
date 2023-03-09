@@ -3,8 +3,12 @@ package me.nixuge.nochunkunload;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import me.nixuge.nochunkunload.command.commands.NoUnloadChunks;
-import me.nixuge.nochunkunload.command.commands.UnloadChunks;
+import me.nixuge.nochunkunload.command.commands.FreezeWorld.FreezeWorld;
+import me.nixuge.nochunkunload.command.commands.FreezeWorld.UnfreezeWorld;
+import me.nixuge.nochunkunload.command.commands.ToggleOff;
+import me.nixuge.nochunkunload.command.commands.ToggleOn;
+import me.nixuge.nochunkunload.command.commands.UnloadChunks.NoUnloadChunks;
+import me.nixuge.nochunkunload.command.commands.UnloadChunks.UnloadChunks;
 import me.nixuge.nochunkunload.config.Cache;
 import me.nixuge.nochunkunload.config.Config;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -51,6 +55,10 @@ public class McMod {
     public void init(final FMLInitializationEvent event) {
         ClientCommandHandler.instance.registerCommand(new NoUnloadChunks(this.cache));
         ClientCommandHandler.instance.registerCommand(new UnloadChunks(this.cache));
+        ClientCommandHandler.instance.registerCommand(new FreezeWorld(this.cache));
+        ClientCommandHandler.instance.registerCommand(new UnfreezeWorld(this.cache));
+        ClientCommandHandler.instance.registerCommand(new ToggleOn(this.cache));
+        ClientCommandHandler.instance.registerCommand(new ToggleOff(this.cache));
 
         MinecraftForge.EVENT_BUS.register(
                 new Config(this.cache, this.configuration)
