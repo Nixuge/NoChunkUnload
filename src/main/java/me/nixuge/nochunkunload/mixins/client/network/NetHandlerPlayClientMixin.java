@@ -111,9 +111,16 @@ public class NetHandlerPlayClientMixin {
     };
 
     public boolean isChunkUnloadedExtensive(Chunk chunk) {
-        return (Arrays.equals(chunk.getBiomeArray(), emptyMinus) ||
-                Arrays.equals(chunk.getBiomeArray(), emptyZero) ||
-                Arrays.equals(chunk.getBlockStorageArray(), emptyStorage));
+        // 2do: check if all of those "equals" are needed
+        // or if some of them can be removed to save a bit of performances
+        byte[] biomeArray = chunk.getBiomeArray();
+        ExtendedBlockStorage[] blockStorageArray = chunk.getBlockStorageArray();
+
+        return (biomeArray.length != 256 ||
+                blockStorageArray.length != 16 ||
+                Arrays.equals(biomeArray, emptyMinus) ||
+                Arrays.equals(biomeArray, emptyZero) ||
+                Arrays.equals(blockStorageArray, emptyStorage));
     }
     public boolean isChunkUnloadedExtensive(int chunkX, int chunkZ) {
         return isChunkUnloadedExtensive(this.clientWorldController.getChunkFromChunkCoords(chunkX, chunkZ));

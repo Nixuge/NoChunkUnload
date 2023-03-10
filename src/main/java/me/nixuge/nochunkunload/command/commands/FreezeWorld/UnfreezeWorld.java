@@ -22,6 +22,8 @@ public class UnfreezeWorld extends AbstractCommand {
     @Override
     public List<String> getCommandAliases() {
         ArrayList<String> al = new ArrayList<>();
+        al.add("unfreeze");
+        al.add("ufreeze");
         al.add("ufw");
         return al;
     }

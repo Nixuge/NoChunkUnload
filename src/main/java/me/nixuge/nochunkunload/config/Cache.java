@@ -11,7 +11,7 @@ public class Cache {
     public void setChunksUnloadable(boolean chunksUnloadable) {
         this.chunksUnloadable = chunksUnloadable;
     }
-    private boolean chunksUnloadable = false;
+    private boolean chunksUnloadable = true;
 
 
     public void setWorldFrozen(boolean worldFrozen) {

@@ -10,10 +10,8 @@ import me.nixuge.nochunkunload.command.commands.ToggleOn;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.NoUnloadChunks;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.UnloadChunks;
 import me.nixuge.nochunkunload.config.Cache;
-import me.nixuge.nochunkunload.config.Config;
 import me.nixuge.nochunkunload.packetutils.PacketUtils;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -61,13 +59,11 @@ public class McMod {
         ClientCommandHandler.instance.registerCommand(new UnfreezeWorld(this.cache));
         ClientCommandHandler.instance.registerCommand(new ToggleOn(this.cache));
         ClientCommandHandler.instance.registerCommand(new ToggleOff(this.cache));
-
-        MinecraftForge.EVENT_BUS.register(
-                new Config(this.cache, this.configuration)
-        );
     }
 
 
     // 2do maybe?: handle c07packetplayerdigging, c08packetplayerblockplacement packets
     // TODO: get config working
+    // Last commit with forge config: d3b7dc2f9cabafd80945261022f9c3c35ce3977c
+    // Files in config/ gui/ & McMod.java
 }

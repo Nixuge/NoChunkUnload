@@ -23,6 +23,7 @@ public class FreezeWorld extends AbstractCommand {
     public List<String> getCommandAliases() {
         ArrayList<String> al = new ArrayList<>();
         al.add("fw");
+        al.add("freeze");
         return al;
     }
 
