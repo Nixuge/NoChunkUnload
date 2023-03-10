@@ -16,7 +16,6 @@ import me.nixuge.nochunkunload.config.Config;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -78,8 +77,8 @@ public class McMod {
         this.cache.resetSavedChunks();
     }
 
-    @SubscribeEvent
-    public void cg(WorldEvent.Unload event) {
-        this.cache.resetSavedChunks();
-    }
+    // TODO: handle c07packetplayerdigging, c08packetplayerblockplacement packets
+    // TODO: handle falling blocks destroying blocks for some reason
+    // TODO: figure out what destroys blocks on the Plex (if not the thing above)
+
 }

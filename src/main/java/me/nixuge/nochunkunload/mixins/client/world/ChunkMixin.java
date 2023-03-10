@@ -7,42 +7,41 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Arrays;
 
 @Mixin(Chunk.class)
 public class ChunkMixin {
     private final Cache cache = McMod.getInstance().getCache();
 
     @Shadow @Final
-    public byte[] blockBiomeArray;
+    private byte[] blockBiomeArray;
 
     @Shadow @Final
     public int xPosition;
     @Shadow @Final
     public int zPosition;
 
-//    @Inject(method = "fillChunk", at = @At("HEAD"), cancellable = true)
-//    public void fillChunk(byte[] p_fillChunk_1_, int p_fillChunk_2_, boolean p_fillChunk_3_, CallbackInfo ci) {
-////        if (cache.isSavedChunk2(xPosition, zPosition)) {
-////            if (cache.isWorldFrozen()) {
-////                System.out.println("Returned for chunk " + xPosition + " " + zPosition);
-////                ci.cancel();
-////            }
-////            return;
-////        }
-//        //cache.addSavedChunk2(xPosition, zPosition);
-//    }
+    private static final byte[] empty = new byte[] { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
-    @ModifyArg(method = "fillChunk", at = @At("HEAD"), index = 0)
+    @ModifyVariable(method = "fillChunk", at = @At("HEAD"), argsOnly = true)
     public byte[] fillChunk(byte[] p_fillChunk_1_) {
-        return this.blockBiomeArray;
-//        if (cache.isSavedChunk2(xPosition, zPosition)) {
-//            if (cache.isWorldFrozen()) {
-//                System.out.println("Returned for chunk " + xPosition + " " + zPosition);
-//                ci.cancel();
-//            }
-//            return;
-//        }
-        //cache.addSavedChunk2(xPosition, zPosition);
+        // If chunk itself is empty
+        if (Arrays.equals(blockBiomeArray, empty)) {
+            if (!cache.isSavedChunk(xPosition, zPosition))
+                cache.addSavedChunk(xPosition, zPosition);
+            return p_fillChunk_1_;
+        }
+
+        // else if a saved chunk
+        if (cache.isSavedChunk(xPosition, zPosition)) {
+            if (cache.isWorldFrozen()) {
+                return this.blockBiomeArray;
+            }
+            return p_fillChunk_1_;
+        }
+
+        cache.addSavedChunk(xPosition, zPosition);
+        return p_fillChunk_1_;
     }
 }
