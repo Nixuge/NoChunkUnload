@@ -66,4 +66,7 @@ public class McMod {
     // TODO: get config working
     // Last commit with forge config: d3b7dc2f9cabafd80945261022f9c3c35ce3977c
     // Files in config/ gui/ & McMod.java
+
+    // TODO: fix
+    //Caused by: java.lang.IllegalArgumentException: Cannot get property PropertyDirection{name=facing, clazz=class net.minecraft.util.EnumFacing, values=[north, south, west, east]} as it does not exist in BlockState{block=minecraft:air, properties=[]}
 }

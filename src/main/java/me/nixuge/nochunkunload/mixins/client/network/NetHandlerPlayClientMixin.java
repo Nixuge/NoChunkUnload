@@ -116,11 +116,15 @@ public class NetHandlerPlayClientMixin {
         byte[] biomeArray = chunk.getBiomeArray();
         ExtendedBlockStorage[] blockStorageArray = chunk.getBlockStorageArray();
 
-        return (biomeArray.length != 256 ||
-                blockStorageArray.length != 16 ||
+        if (biomeArray.length != 256 || blockStorageArray.length != 16) {
+            return false;
+        }
+
+        return (
                 Arrays.equals(biomeArray, emptyMinus) ||
                 Arrays.equals(biomeArray, emptyZero) ||
-                Arrays.equals(blockStorageArray, emptyStorage));
+                Arrays.equals(blockStorageArray, emptyStorage)
+            );
     }
     public boolean isChunkUnloadedExtensive(int chunkX, int chunkZ) {
         return isChunkUnloadedExtensive(this.clientWorldController.getChunkFromChunkCoords(chunkX, chunkZ));
