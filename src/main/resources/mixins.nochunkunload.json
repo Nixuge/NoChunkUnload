@@ -6,9 +6,7 @@
   "client": [
     "client.multiplayer.ChunkProviderClientMixin",
     "client.network.NetHandlerPlayClientMixin",
-    "client.multiplayer.WorldClientMixin",
-    "client.world.WorldMixin",
-    "client.world.ChunkMixin"
+    "client.multiplayer.WorldClientMixin"
   ],
   "server": []
 }

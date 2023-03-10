@@ -1,6 +1,7 @@
 package me.nixuge.nochunkunload.config;
 
 import lombok.Getter;
+import net.minecraft.network.play.server.S26PacketMapChunkBulk;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,21 +46,7 @@ public class Cache {
     }
     public List<int[]> savedChunks = new ArrayList<>();
 
-    public boolean isSavedChunk2(int[] newChunk) {
-        for (int[] chunk : this.savedChunks2) {
-            if (Arrays.equals(chunk, newChunk))
-                return true;
-        }
-        return false;
+    public S26PacketMapChunkBulk getPacket(S26PacketMapChunkBulk pack, List<Integer> v) {
+        return new S26PacketMaker(pack, v).genNewPacket();
     }
-    public boolean isSavedChunk2(int chunkX, int chunkZ) {
-        return isSavedChunk(new int[] { chunkX, chunkZ });
-    }
-    public void addSavedChunk2(int chunkX, int chunkZ) {
-        this.savedChunks.add(new int[] { chunkX, chunkZ });
-    }
-    public void resetSavedChunks2() {
-        this.savedChunks = new ArrayList<>();
-    }
-    public List<int[]> savedChunks2 = new ArrayList<>();
 }
