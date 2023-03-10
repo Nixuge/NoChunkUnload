@@ -2,6 +2,7 @@ package me.nixuge.nochunkunload.mixins.client.network;
 
 import me.nixuge.nochunkunload.McMod;
 import me.nixuge.nochunkunload.config.Cache;
+import me.nixuge.nochunkunload.packetutils.PacketUtils;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.server.*;
@@ -22,6 +23,7 @@ import java.util.stream.IntStream;
 @Mixin(NetHandlerPlayClient.class)
 public class NetHandlerPlayClientMixin {
     private final Cache cache = McMod.getInstance().getCache();
+    private final PacketUtils packetUtils = McMod.getInstance().getPacketUtils();
 
     @Inject(method = "handleBlockChange", at = @At("HEAD"), cancellable = true)
     public void blockChange(S23PacketBlockChange p_handleBlockChange_1_, CallbackInfo ci) {
@@ -146,7 +148,7 @@ public class NetHandlerPlayClientMixin {
             }
         }
 
-        return cache.getPacket(p_handleMapChunkBulk_1_, validIndexes);
+        return packetUtils.getPacket(p_handleMapChunkBulk_1_, validIndexes);
     }
 
 

@@ -3,24 +3,21 @@ package me.nixuge.nochunkunload;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import me.nixuge.nochunkunload.command.commands.CurrentChunkLoaded;
 import me.nixuge.nochunkunload.command.commands.FreezeWorld.FreezeWorld;
 import me.nixuge.nochunkunload.command.commands.FreezeWorld.UnfreezeWorld;
-import me.nixuge.nochunkunload.command.commands.ResetChunkLoaded;
 import me.nixuge.nochunkunload.command.commands.ToggleOff;
 import me.nixuge.nochunkunload.command.commands.ToggleOn;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.NoUnloadChunks;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.UnloadChunks;
 import me.nixuge.nochunkunload.config.Cache;
 import me.nixuge.nochunkunload.config.Config;
+import me.nixuge.nochunkunload.packetutils.PacketUtils;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
 import java.io.File;
 
@@ -45,6 +42,7 @@ public class McMod {
     private static McMod instance;
 
     private final Cache cache = new Cache();
+    private final PacketUtils packetUtils = new PacketUtils();
     private Configuration configuration;
     private String configDirectory;
 
@@ -64,21 +62,12 @@ public class McMod {
         ClientCommandHandler.instance.registerCommand(new ToggleOn(this.cache));
         ClientCommandHandler.instance.registerCommand(new ToggleOff(this.cache));
 
-        ClientCommandHandler.instance.registerCommand(new CurrentChunkLoaded(this.cache));
-        ClientCommandHandler.instance.registerCommand(new ResetChunkLoaded(this.cache));
-
         MinecraftForge.EVENT_BUS.register(
                 new Config(this.cache, this.configuration)
         );
     }
 
-    @SubscribeEvent
-    public void worldChange(PlayerEvent.PlayerChangedDimensionEvent event) {
-        this.cache.resetSavedChunks();
-    }
 
-    // TODO: handle c07packetplayerdigging, c08packetplayerblockplacement packets
-    // TODO: handle falling blocks destroying blocks for some reason
-    // TODO: figure out what destroys blocks on the Plex (if not the thing above)
-
+    // 2do maybe?: handle c07packetplayerdigging, c08packetplayerblockplacement packets
+    // TODO: get config working
 }
