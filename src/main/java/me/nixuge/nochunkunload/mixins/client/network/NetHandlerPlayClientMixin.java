@@ -100,4 +100,72 @@ public class NetHandlerPlayClientMixin {
             ci.cancel();
         }
     }
+
+
+
+    @Shadow
+    private WorldClient clientWorldController;
+    private static final byte[] emptyMinus = new byte[] { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+    private static final byte[] emptyZero = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    private static final ExtendedBlockStorage[] emptyStorage = new ExtendedBlockStorage[] {
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
+    };
+
+    public boolean isChunkUnSavedExtensive(Chunk chunk) {
+        return (Arrays.equals(chunk.getBiomeArray(), emptyMinus) ||
+                Arrays.equals(chunk.getBiomeArray(), emptyZero) ||
+                Arrays.equals(chunk.getBlockStorageArray(), emptyStorage));
+    }
+    public boolean isChunkUnSavedExtensive(int chunkX, int chunkZ) {
+        return isChunkUnSavedExtensive(this.clientWorldController.getChunkFromChunkCoords(chunkX, chunkZ));
+    }
+    public boolean isChunkSavedExtensive(Chunk chunk) {
+        return !isChunkUnSavedExtensive(chunk);
+    }
+    public boolean isChunkSavedExtensive(int chunkX, int chunkZ) {
+        return isChunkSavedExtensive(this.clientWorldController.getChunkFromChunkCoords(chunkX, chunkZ));
+    }
+
+
+    // save already loaded chunks
+    @Inject(method = "handleChunkData", at = @At("HEAD"), cancellable = true)
+    public void chunkData(S21PacketChunkData p_handleChunkData_1_, CallbackInfo ci) {
+        if (cache.isWorldFrozen() && isChunkSavedExtensive(p_handleChunkData_1_.getChunkX(), p_handleChunkData_1_.getChunkZ())) {
+            ci.cancel();
+        }
+    }
+
+
+
+    @ModifyVariable(method = "handleMapChunkBulk", at = @At("HEAD"), argsOnly = true)
+    public S26PacketMapChunkBulk mapChunkBulk1(S26PacketMapChunkBulk p_handleMapChunkBulk_1_) throws IOException {
+        if (!cache.isWorldFrozen()) {
+            return p_handleMapChunkBulk_1_;
+        }
+
+        // Make a list to store valid chunk indexes
+        List<Integer> validIndexes = new ArrayList<>();
+
+        for (int i = 0; i < p_handleMapChunkBulk_1_.getChunkCount(); ++i) {
+            if (isChunkUnSavedExtensive( p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i) )) {
+                validIndexes.add(i);
+            }
+        }
+
+        return cache.getPacket(p_handleMapChunkBulk_1_, validIndexes);
+//        PacketBuffer buf = new PacketBuffer(Unpooled.buffer());
+//        p_handleMapChunkBulk_1_.writePacketData(buf);
+//        S26PacketMapChunkBulk newPacket = new S26PacketMapChunkBulk();
+//        newPacket.readPacketData(buf);
+//        return newPacket;
+    }
+
+    @Inject(method = "handleMapChunkBulk", at = @At("HEAD"), cancellable = true)
+    public void mapChunkBulk(S26PacketMapChunkBulk p_handleMapChunkBulk_1_, CallbackInfo ci) throws IOException {
+        // System.out.println("DAAAMN: " + p_handleMapChunkBulk_1_.getChunkBytes(0)[0]);
+        if (Arrays.equals(p_handleMapChunkBulk_1_.getChunkBytes(0), emptyMinus)) {
+            System.out.println("EYOOO");
+            ci.cancel();
+        }
+    }
 }

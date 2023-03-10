@@ -56,10 +56,10 @@ public class S26PacketMaker {
 //        System.out.println("part 3.");
         int actualI = 0;
         for(int i = 0; i < bufSize; ++i) {
-            if (!this.validIndexes.contains(i)) {
-                buf.readInt(); buf.readInt(); buf.readShort();
-                continue;
-            }
+//            if (!this.validIndexes.contains(i)) {
+//                buf.readInt(); buf.readInt(); buf.readShort();
+//                continue;
+//            }
             this.xPositions[actualI] = buf.readInt();
             this.zPositions[actualI] = buf.readInt();
             this.chunksData[actualI] = new S21PacketChunkData.Extracted();
@@ -71,10 +71,10 @@ public class S26PacketMaker {
         byte[] ok = new byte[0];
         actualI = 0;
         for (int k = 0; k < bufSize; ++k) {
-            if (!this.validIndexes.contains(k)) {
-                buf.readBytes(ok);
-                continue;
-            }
+//            if (!this.validIndexes.contains(k)) {
+//                buf.readBytes(ok);
+//                continue;
+//            }
             buf.readBytes(this.chunksData[actualI].data);
             actualI++;
         }
@@ -112,12 +112,6 @@ public class S26PacketMaker {
 
 
 
-    /**
-     * @param p_180737_0_
-     * @param p_180737_1_
-     * @param p_180737_2_
-     * @return
-     */
     private int func_180737_a(int p_180737_0_, boolean p_180737_1_, boolean p_180737_2_) {
         int lvt_3_1_ = p_180737_0_ * 2 * 16 * 16 * 16;
         int lvt_4_1_ = p_180737_0_ * 16 * 16 * 16 / 2;
