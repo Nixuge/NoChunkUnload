@@ -7,8 +7,8 @@
 # - runClient task
 
 
-./gradlew build
-rm run/mods/*
+#./gradlew build
+#rm run/mods/*
 rm -r run/.mixin.out
-mv build/libs/* run/mods/
+#mv build/libs/* run/mods/
 ./gradlew runClient
