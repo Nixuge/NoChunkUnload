@@ -24,7 +24,7 @@ public class NetHandlerPlayClientMixin {
     private final PacketUtils packetUtils = McMod.getInstance().getPacketUtils();
 
     @Inject(method = "handleBlockChange", at = @At("HEAD"), cancellable = true)
-    public void blockChange(S23PacketBlockChange p_handleBlockChange_1_, CallbackInfo ci) {
+    public void blockChange(S23PacketBlockChange packetBlockChange, CallbackInfo ci) {
         if (cache.isWorldFrozen()) {
             ci.cancel();
         }
@@ -33,7 +33,7 @@ public class NetHandlerPlayClientMixin {
     // Unneeded as this just wraps around handleBlockChange()
     // but might as well have it avoid running unnecessary calculations
     @Inject(method = "handleMultiBlockChange", at = @At("HEAD"), cancellable = true)
-    public void multiBlockChange(S22PacketMultiBlockChange p_handleMultiBlockChange_1_, CallbackInfo ci) {
+    public void multiBlockChange(S22PacketMultiBlockChange packetMultiBlockChange, CallbackInfo ci) {
         if (cache.isWorldFrozen()) {
             ci.cancel();
         }
@@ -41,7 +41,7 @@ public class NetHandlerPlayClientMixin {
 
     // Never saw that used but might as well
     @Inject(method = "handleExplosion", at = @At("HEAD"), cancellable = true)
-    public void explosion(S27PacketExplosion p_handleExplosion_1_, CallbackInfo ci) {
+    public void explosion(S27PacketExplosion packetExplosion, CallbackInfo ci) {
         if (cache.isWorldFrozen()) {
             ci.cancel();
         }
@@ -49,21 +49,21 @@ public class NetHandlerPlayClientMixin {
 
 
     @Inject(method = "handleUpdateTileEntity", at = @At("RETURN"), cancellable = true)
-    public void updateTileEntity(S35PacketUpdateTileEntity p_handleUpdateTileEntity_1_, CallbackInfo ci) {
+    public void updateTileEntity(S35PacketUpdateTileEntity packetUpdateTileEntity, CallbackInfo ci) {
         if (cache.isWorldFrozen()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "handleBlockAction", at = @At("RETURN"), cancellable = true)
-    public void blockAction(S24PacketBlockAction p_handleBlockAction_1_, CallbackInfo ci) {
+    public void blockAction(S24PacketBlockAction packetBlockAction, CallbackInfo ci) {
         if (cache.isWorldFrozen()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "handleBlockBreakAnim", at = @At("RETURN"), cancellable = true)
-    public void blockBreakAnim(S25PacketBlockBreakAnim p_handleBlockBreakAnim_1_, CallbackInfo ci) {
+    public void blockBreakAnim(S25PacketBlockBreakAnim packetBlockBreakAnim, CallbackInfo ci) {
         if (cache.isWorldFrozen()) {
             ci.cancel();
         }
@@ -80,19 +80,19 @@ public class NetHandlerPlayClientMixin {
     };
 
     @Inject(method = "handleSpawnObject", at = @At("HEAD"), cancellable = true)
-    public void spawnObject(S0EPacketSpawnObject p_handleSpawnObject_1_, CallbackInfo ci) {
+    public void spawnObject(S0EPacketSpawnObject packetSpawnObject, CallbackInfo ci) {
         if (!cache.isWorldFrozen()) {
             return;
         }
 
-        int thisObjectType = p_handleSpawnObject_1_.getType();
+        int thisObjectType = packetSpawnObject.getType();
         if (IntStream.of(blacklistedEntities).anyMatch(type -> type == thisObjectType))
             ci.cancel();
     }
 
 
     @Inject(method = "handleUpdateTileEntity", at = @At("HEAD"), cancellable = true)
-    public void handleUpdateTileEntity(S35PacketUpdateTileEntity s35packet, CallbackInfo ci) {
+    public void handleUpdateTileEntity(S35PacketUpdateTileEntity packetUpdateTileEntity, CallbackInfo ci) {
         if (cache.isWorldFrozen()) {
             ci.cancel();
         }
@@ -121,28 +121,28 @@ public class NetHandlerPlayClientMixin {
 
     // save already loaded chunks
     @Inject(method = "handleChunkData", at = @At("HEAD"), cancellable = true)
-    public void chunkData(S21PacketChunkData s21packet, CallbackInfo ci) {
-        if (cache.isWorldFrozen() && isChunkLoaded(s21packet.getChunkX(), s21packet.getChunkZ())) {
+    public void chunkData(S21PacketChunkData packetChunkData, CallbackInfo ci) {
+        if (cache.isWorldFrozen() && isChunkLoaded(packetChunkData.getChunkX(), packetChunkData.getChunkZ())) {
             ci.cancel();
         }
     }
 
     @ModifyVariable(method = "handleMapChunkBulk", at = @At("HEAD"), argsOnly = true)
-    public S26PacketMapChunkBulk mapChunkBulk1(S26PacketMapChunkBulk p_handleMapChunkBulk_1_) {
+    public S26PacketMapChunkBulk mapChunkBulk1(S26PacketMapChunkBulk packetMapChunkBulk) {
         if (!cache.isWorldFrozen()) {
-            return p_handleMapChunkBulk_1_;
+            return packetMapChunkBulk;
         }
 
         List<Integer> validIndexes = new ArrayList<>();
 
-        for (int i = 0; i < p_handleMapChunkBulk_1_.getChunkCount(); ++i) {
-            System.out.println("handleMapChunkBulk:" + p_handleMapChunkBulk_1_.getChunkX(i) + " " + p_handleMapChunkBulk_1_.getChunkZ(i));
-            if (isChunkUnloaded( p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i) )) {
+        for (int i = 0; i < packetMapChunkBulk.getChunkCount(); ++i) {
+            System.out.println("handleMapChunkBulk:" + packetMapChunkBulk.getChunkX(i) + " " + packetMapChunkBulk.getChunkZ(i));
+            if (isChunkUnloaded( packetMapChunkBulk.getChunkX(i), packetMapChunkBulk.getChunkZ(i) )) {
                 validIndexes.add(i);
             }
         }
 
-        return packetUtils.getPacket(p_handleMapChunkBulk_1_, validIndexes);
+        return packetUtils.getPacket(packetMapChunkBulk, validIndexes);
     }
 
 
@@ -155,8 +155,8 @@ public class NetHandlerPlayClientMixin {
      * all the chunks in the inbound packet are already saved.
      */
     @Inject(method = "handleMapChunkBulk", at = @At("HEAD"), cancellable = true)
-    public void mapChunkBulk(S26PacketMapChunkBulk p_handleMapChunkBulk_1_, CallbackInfo ci) {
-        if (Arrays.equals(p_handleMapChunkBulk_1_.getChunkBytes(0), emptyMinus)) {
+    public void mapChunkBulk(S26PacketMapChunkBulk packetMapChunkBulk, CallbackInfo ci) {
+        if (Arrays.equals(packetMapChunkBulk.getChunkBytes(0), emptyMinus)) {
             ci.cancel();
         }
     }
