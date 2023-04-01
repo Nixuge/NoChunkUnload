@@ -136,7 +136,6 @@ public class NetHandlerPlayClientMixin {
         List<Integer> validIndexes = new ArrayList<>();
 
         for (int i = 0; i < packetMapChunkBulk.getChunkCount(); ++i) {
-            System.out.println("handleMapChunkBulk:" + packetMapChunkBulk.getChunkX(i) + " " + packetMapChunkBulk.getChunkZ(i));
             if (isChunkUnloaded( packetMapChunkBulk.getChunkX(i), packetMapChunkBulk.getChunkZ(i) )) {
                 validIndexes.add(i);
             }

@@ -141,7 +141,7 @@ public class S26PacketMaker {
         try {
             newPacket.readPacketData(buf);
         } catch (IOException e) {
-            System.out.println("part EXCEPTION.");
+            System.out.println("Exception happened reading packet data.");
             throw new RuntimeException(e);
         }
 
