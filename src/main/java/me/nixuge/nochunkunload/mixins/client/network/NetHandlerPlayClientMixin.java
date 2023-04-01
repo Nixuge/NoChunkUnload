@@ -4,13 +4,10 @@ import me.nixuge.nochunkunload.McMod;
 import me.nixuge.nochunkunload.config.Cache;
 import me.nixuge.nochunkunload.utils.packet.PacketUtils;
 import me.nixuge.nochunkunload.utils.reflection.ChunkProvider;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.server.*;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -95,85 +92,37 @@ public class NetHandlerPlayClientMixin {
 
 
     @Inject(method = "handleUpdateTileEntity", at = @At("HEAD"), cancellable = true)
-    public void handleUpdateTileEntity(S35PacketUpdateTileEntity p_handleUpdateTileEntity_1_, CallbackInfo ci) {
+    public void handleUpdateTileEntity(S35PacketUpdateTileEntity s35packet, CallbackInfo ci) {
         if (cache.isWorldFrozen()) {
             ci.cancel();
         }
     }
 
-
-
-    @Shadow
-    private WorldClient clientWorldController;
-    private static final byte[] emptyMinus = new byte[] { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-    private static final byte[] emptyZero = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    private static final ExtendedBlockStorage[] emptyStorage = new ExtendedBlockStorage[] {
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null
-    };
-
-    // public boolean isChunkUnloadedExtensive(Chunk chunk) {
-    //     loadedChunks = ChunkProvider.getChunkList();
-    //     int mainChunkX = chunk.xPosition;
-    //     int mainChunkZ = chunk.zPosition;
-    //     // chunk.xPosition
-    //     for (Chunk chunk_ : loadedChunks) {
-    //         if (chunk_.getChunkCoordIntPair().chunkXPos == mainChunkX &&
-    //             chunk_.getChunkCoordIntPair().chunkZPos == mainChunkZ) {
-    //             System.out.println("ALREADY LOADED! " + loadedChunks.size() + " x:" + mainChunkX + " z:" + mainChunkZ);
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-        
-
-        // 2do: check if all of those "equals" are needed
-        // or if some of them can be removed to save a bit of performances
-        // byte[] biomeArray = chunk.getBiomeArray();
-        // ExtendedBlockStorage[] blockStorageArray = chunk.getBlockStorageArray();
-
-        // if (biomeArray.length != 256 || blockStorageArray.length != 16) {
-        //     return false;
-        // }
-
-        // System.out.println("STATUS: " + 
-        // " | emptyMinus: " + Arrays.equals(biomeArray, emptyMinus) +
-        // " | emptyZero: " + Arrays.equals(biomeArray, emptyZero) +
-        // " | emptyStorage: " + Arrays.equals(blockStorageArray, emptyStorage)
-        // );
-        
-        // return true;
-        // return (
-        //         Arrays.equals(biomeArray, emptyMinus) ||
-        //         Arrays.equals(biomeArray, emptyZero) ||
-        //         Arrays.equals(blockStorageArray, emptyStorage)
-        //     );
-    // }
-    public boolean isChunkUnloadedExtensive(int chunkX, int chunkZ) {
+    public boolean isChunkUnloaded(int chunkX, int chunkZ) {
         List<Chunk> loadedChunks = ChunkProvider.getChunkList();
 
-        // chunk.xPosition
         for (Chunk chunk_ : loadedChunks) {
-            if (chunk_.getChunkCoordIntPair().chunkXPos == chunkX &&
-                chunk_.getChunkCoordIntPair().chunkZPos == chunkZ) {
-                // System.out.println("ALREADY LOADED! " + loadedChunks.size() + " x:" + chunkX + " z:" + chunkZ);
+            if (chunk_.xPosition == chunkX &&
+                chunk_.zPosition == chunkZ) {
                 return false;
             }
         }
         return true;
     }
-    public boolean isChunkLoadedExtensive(Chunk chunk) {
-        return !isChunkUnloadedExtensive(chunk.xPosition, chunk.zPosition);
+
+    public boolean isChunkLoaded(Chunk chunk) {
+        return !isChunkUnloaded(chunk.xPosition, chunk.zPosition);
     }
-    public boolean isChunkLoadedExtensive(int chunkX, int chunkZ) {
-        return !isChunkUnloadedExtensive(chunkX, chunkZ);
+
+    public boolean isChunkLoaded(int chunkX, int chunkZ) {
+        return !isChunkUnloaded(chunkX, chunkZ);
     }
 
 
     // save already loaded chunks
     @Inject(method = "handleChunkData", at = @At("HEAD"), cancellable = true)
-    public void chunkData(S21PacketChunkData p_handleChunkData_1_, CallbackInfo ci) {
-        System.out.println("handleChunkData:" + p_handleChunkData_1_.getChunkX() + " " + p_handleChunkData_1_.getChunkZ());
-        if (cache.isWorldFrozen() && isChunkLoadedExtensive(p_handleChunkData_1_.getChunkX(), p_handleChunkData_1_.getChunkZ())) {
+    public void chunkData(S21PacketChunkData s21packet, CallbackInfo ci) {
+        if (cache.isWorldFrozen() && isChunkLoaded(s21packet.getChunkX(), s21packet.getChunkZ())) {
             ci.cancel();
         }
     }
@@ -188,7 +137,7 @@ public class NetHandlerPlayClientMixin {
 
         for (int i = 0; i < p_handleMapChunkBulk_1_.getChunkCount(); ++i) {
             System.out.println("handleMapChunkBulk:" + p_handleMapChunkBulk_1_.getChunkX(i) + " " + p_handleMapChunkBulk_1_.getChunkZ(i));
-            if (isChunkUnloadedExtensive( p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i) )) {
+            if (isChunkUnloaded( p_handleMapChunkBulk_1_.getChunkX(i), p_handleMapChunkBulk_1_.getChunkZ(i) )) {
                 validIndexes.add(i);
             }
         }
@@ -196,6 +145,8 @@ public class NetHandlerPlayClientMixin {
         return packetUtils.getPacket(p_handleMapChunkBulk_1_, validIndexes);
     }
 
+
+    private static final byte[] emptyMinus = new byte[] { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
     /**
      * See S26PacketMaker's setValuesToEmptyPacket()

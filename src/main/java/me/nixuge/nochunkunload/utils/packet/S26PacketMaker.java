@@ -39,7 +39,9 @@ public class S26PacketMaker {
 
     /**
      * Sets isOverworld, xPositions, zPositions & chunksData
-     * for an empty (0 chunks) packet
+     * for an empty (0 chunks) packet.
+     * Data for an empty packet is set to a byte arr of length 256 filled with -1s.
+     * See NetHandlerPlayClientMixin#mapChunkBulk for how to handle this
      */
     private void setValuesToEmptyPacket() {
         S21PacketChunkData.Extracted arr = new S21PacketChunkData.Extracted();
