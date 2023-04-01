@@ -2,7 +2,7 @@ package me.nixuge.nochunkunload;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.log4j.Log4j2;
+// import lombok.extern.log4j.Log4j2;
 import me.nixuge.nochunkunload.command.commands.FreezeWorld.FreezeWorld;
 import me.nixuge.nochunkunload.command.commands.FreezeWorld.UnfreezeWorld;
 import me.nixuge.nochunkunload.command.commands.ToggleOff;
@@ -10,7 +10,7 @@ import me.nixuge.nochunkunload.command.commands.ToggleOn;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.NoUnloadChunks;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.UnloadChunks;
 import me.nixuge.nochunkunload.config.Cache;
-import me.nixuge.nochunkunload.packetutils.PacketUtils;
+import me.nixuge.nochunkunload.utils.packet.PacketUtils;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
@@ -26,7 +26,7 @@ import java.io.File;
         guiFactory = "me.nixuge.nochunkunload.gui.GuiFactory",
         clientSideOnly = true
 )
-@Log4j2
+// @Log4j2
 @Getter
 @Setter
 public class McMod {

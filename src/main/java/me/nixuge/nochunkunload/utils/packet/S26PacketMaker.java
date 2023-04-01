@@ -1,4 +1,4 @@
-package me.nixuge.nochunkunload.packetutils;
+package me.nixuge.nochunkunload.utils.packet;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.PacketBuffer;

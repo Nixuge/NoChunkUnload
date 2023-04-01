@@ -1,4 +1,4 @@
-package me.nixuge.nochunkunload.packetutils;
+package me.nixuge.nochunkunload.utils.packet;
 
 import net.minecraft.network.play.server.S26PacketMapChunkBulk;
 
