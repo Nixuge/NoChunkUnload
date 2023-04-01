@@ -23,6 +23,11 @@ public class ChunkProvider {
          * 2- This could prolly be optimized to cache the worldChunk, but honestly this mod already hits hard
          *    on performances in other ways (60 render distance) so might as well just get that list
          *    every time, in case mc changes its chunk list instance or something.
+         * 
+         * 3- Why use reflections to get the chunkList instead of just using worldClient.getChunkProvider().chunkExists(chunkX, chunkZ) ?
+         *    Because unlike what this guy says https://forums.minecraftforge.net/topic/26474-1710check-if-chunk-is-loaded/?do=findComment&comment=136879
+         *    for some reason that always returns true (at least from my tests, both in dev & prod)
+         *    & so is unusable
          */
 		
         WorldClient worldClient = Minecraft.getMinecraft().theWorld;
