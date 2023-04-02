@@ -5,6 +5,7 @@
   "mixins": [],
   "client": [
     "client.multiplayer.ChunkProviderClientMixin",
+    "client.multiplayer.ChunkProviderServerMixin",
     "client.network.NetHandlerPlayClientMixin"
   ],
   "server": []

@@ -4,15 +4,23 @@ import me.nixuge.nochunkunload.McMod;
 import me.nixuge.nochunkunload.config.Cache;
 import me.nixuge.nochunkunload.utils.packet.PacketUtils;
 import me.nixuge.nochunkunload.utils.reflection.ChunkProvider;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.server.*;
+import net.minecraft.world.WorldProviderSurface;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.AnvilChunkLoader;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -122,13 +130,14 @@ public class NetHandlerPlayClientMixin {
     // save already loaded chunks
     @Inject(method = "handleChunkData", at = @At("HEAD"), cancellable = true)
     public void chunkData(S21PacketChunkData packetChunkData, CallbackInfo ci) {
+        ci.cancel();
         if (cache.isWorldFrozen() && isChunkLoaded(packetChunkData.getChunkX(), packetChunkData.getChunkZ())) {
             ci.cancel();
         }
     }
 
     @ModifyVariable(method = "handleMapChunkBulk", at = @At("HEAD"), argsOnly = true)
-    public S26PacketMapChunkBulk mapChunkBulk1(S26PacketMapChunkBulk packetMapChunkBulk) {
+    public S26PacketMapChunkBulk mapChunkBulk(S26PacketMapChunkBulk packetMapChunkBulk) {
         if (!cache.isWorldFrozen()) {
             return packetMapChunkBulk;
         }
@@ -155,8 +164,48 @@ public class NetHandlerPlayClientMixin {
      */
     @Inject(method = "handleMapChunkBulk", at = @At("HEAD"), cancellable = true)
     public void mapChunkBulk(S26PacketMapChunkBulk packetMapChunkBulk, CallbackInfo ci) {
+        // ci.cancel();
         if (Arrays.equals(packetMapChunkBulk.getChunkBytes(0), emptyMinus)) {
             ci.cancel();
         }
+
+        // NOTE: THIS WORKS (l 195-198).
+        // NOW TO TRY WITH CHUNKPROVIDERCLIENT.
+
+        // PacketThreadUtil.checkThreadAndEnqueue(packetMapChunkBulk, (NetHandlerPlayClient) (Object) this, Minecraft.getMinecraft());
+
+        // WorldClient worldClient = Minecraft.getMinecraft().theWorld;
+        // for (int i = 0; i < packetMapChunkBulk.getChunkCount(); ++i)
+        // {
+        //     int chunkX = packetMapChunkBulk.getChunkX(i);
+        //     int chunkZ = packetMapChunkBulk.getChunkZ(i);
+        //     worldClient.doPreChunk(chunkX, chunkZ, true);
+        //     worldClient.invalidateBlockReceiveRegion(chunkX << 4, 0, chunkZ << 4, (chunkX << 4) + 15, 256, (chunkZ << 4) + 15);
+
+        //     AnvilChunkLoader loader = new AnvilChunkLoader(new File("saves/owo"));
+        //     Chunk chunk = null;
+        //     try {
+        //         chunk = loader.loadChunk(Minecraft.getMinecraft().theWorld, chunkX, chunkZ);
+        //     } catch (IOException e) {
+        //         e.printStackTrace();
+        //     }
+
+        //     Chunk chunk2 = worldClient.getChunkFromChunkCoords(chunkX, chunkZ);
+        //     // chunk2.fillChunk(packetMapChunkBulk.getChunkBytes(i), packetMapChunkBulk.getChunkSize(i), true);
+        //     chunk2.setStorageArrays(chunk.getBlockStorageArray());
+        //     chunk2.setBiomeArray(chunk.getBiomeArray());
+        //     chunk2.setHeightMap(chunk.getHeightMap());
+        //     // chunk2.setHasEntities(chunk.getEntityLists().length > 0);
+
+        //     worldClient.markBlockRangeForRenderUpdate(chunkX << 4, 0, chunkZ << 4, (chunkX << 4) + 15, 256, (chunkZ << 4) + 15);
+
+        //     if (!(worldClient.provider instanceof WorldProviderSurface))
+        //     {
+        //         chunk.resetRelightChecks();
+        //     }
+        // }
+        // ci.cancel();
+        // return;
+
     }
 }
