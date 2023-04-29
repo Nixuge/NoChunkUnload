@@ -5,7 +5,6 @@ import lombok.Setter;
 // import lombok.extern.log4j.Log4j2;
 import me.nixuge.nochunkunload.command.commands.FreezeWorld.FreezeWorld;
 import me.nixuge.nochunkunload.command.commands.FreezeWorld.UnfreezeWorld;
-import me.nixuge.nochunkunload.command.commands.LoadWorldChunksCommand;
 import me.nixuge.nochunkunload.command.commands.ToggleOff;
 import me.nixuge.nochunkunload.command.commands.ToggleOn;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.NoUnloadChunks;
@@ -60,8 +59,6 @@ public class McMod {
         ClientCommandHandler.instance.registerCommand(new UnfreezeWorld(this.cache));
         ClientCommandHandler.instance.registerCommand(new ToggleOn(this.cache));
         ClientCommandHandler.instance.registerCommand(new ToggleOff(this.cache));
-
-        ClientCommandHandler.instance.registerCommand(new LoadWorldChunksCommand(this.cache));
     }
 
 
