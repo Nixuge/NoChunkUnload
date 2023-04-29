@@ -54,16 +54,27 @@ public class ChunkProviderClientMixin {
             // packet receive part
             worldClient.invalidateBlockReceiveRegion(chunkX << 4, 0, chunkZ << 4, (chunkX << 4) + 15, 256, (chunkZ << 4) + 15);
 
-            //added part
+            // added part
             AnvilChunkLoader loader = new AnvilChunkLoader(new File("saves/owo"));
             chunk = loader.loadChunk(Minecraft.getMinecraft().theWorld, chunkX, chunkZ);
 
             Chunk chunk2 = this.chunkMapping.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(chunkX, chunkZ));
             
-            chunk2.setStorageArrays(chunk.getBlockStorageArray());
-            chunk2.setBiomeArray(chunk.getBiomeArray());
-            chunk2.setHeightMap(chunk.getHeightMap());
-            chunk2.setHasEntities(chunk.getEntityLists().length > 0);
+            System.out.println(chunk2);
+            if (chunk2 != null) {
+                System.out.println("contains:" + chunkListing.contains(chunk2));
+                System.out.println("c2:" + chunk2.xPosition + " " + chunk2.zPosition + " " + chunk2.isLoaded());
+                System.out.println("c1:" + chunk.xPosition + " " + chunk.zPosition + " " + chunk.isLoaded());
+                chunk2.setStorageArrays(chunk.getBlockStorageArray());
+                chunk2.setBiomeArray(chunk.getBiomeArray());
+                chunk2.setHeightMap(chunk.getHeightMap());
+                chunk2.setHasEntities(chunk.getEntityLists().length > 0);
+                chunkListing.remove(chunk2);
+            } else {
+                System.out.println("chunk is null.");
+            }
+
+
 
     //         // loadChunk part
     //         System.out.println(chunk);
