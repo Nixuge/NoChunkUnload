@@ -2,7 +2,6 @@ package me.nixuge.nochunkunload.mixins.client.multiplayer;
 
 import me.nixuge.nochunkunload.McMod;
 import me.nixuge.nochunkunload.config.Cache;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 
 

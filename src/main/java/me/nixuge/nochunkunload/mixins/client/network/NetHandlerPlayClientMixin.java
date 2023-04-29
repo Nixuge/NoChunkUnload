@@ -10,12 +10,10 @@ import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+
 import java.util.stream.IntStream;
 
 @Mixin(NetHandlerPlayClient.class)
@@ -98,9 +96,9 @@ public class NetHandlerPlayClientMixin {
     }
 
     public boolean isChunkUnloaded(int chunkX, int chunkZ) {
-        List<Chunk> loadedChunks = ChunkProvider.getChunkList();
+        Long2ObjectMap<Chunk> loadedChunks = ChunkProvider.getChunkList();
 
-        for (Chunk chunk_ : loadedChunks) {
+        for (Chunk chunk_ : loadedChunks.values()) {
             if (chunk_.xPosition == chunkX &&
                 chunk_.zPosition == chunkZ) {
                 return false;
@@ -121,8 +119,14 @@ public class NetHandlerPlayClientMixin {
     // save already loaded chunks
     @Inject(method = "handleChunkData", at = @At("HEAD"), cancellable = true)
     public void chunkData(SPacketChunkData packetChunkData, CallbackInfo ci) {
-        ci.cancel();
         if (cache.isWorldFrozen() && isChunkLoaded(packetChunkData.getChunkX(), packetChunkData.getChunkZ())) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "processChunkUnload", at = @At("HEAD"), cancellable = true)
+    public void processChunkUnload(SPacketUnloadChunk packetIn, CallbackInfo ci) {
+        if (!cache.areChunksUnloadable()) {
             ci.cancel();
         }
     }

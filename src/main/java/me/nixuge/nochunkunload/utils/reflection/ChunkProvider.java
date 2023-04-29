@@ -1,9 +1,8 @@
 package me.nixuge.nochunkunload.utils.reflection;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -11,7 +10,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class ChunkProvider {
     @SuppressWarnings("unchecked")
-    public static List<Chunk> getChunkList() {
+    public static Long2ObjectMap<Chunk> getChunkList() {
         /* 
          * Notes:
          * 1- For some reason, just calling anything on worldClient.getChunkProvider
@@ -33,12 +32,12 @@ public class ChunkProvider {
         WorldClient worldClient = Minecraft.getMinecraft().theWorld;
 
         Class<?> typeOfObject = ChunkProviderClient.class;
-        Class<?> typeOfField = List.class;
-        List<Chunk> chunkList = new ArrayList<>();
+        Class<?> typeOfField = Long2ObjectMap.class;
+        Long2ObjectMap<Chunk> chunkList = null;
 
         try {
             Field f = ReflectionUtils.findField(typeOfObject, typeOfField); // Cached anyways
-            chunkList = (List<Chunk>) typeOfField.cast(f.get(worldClient.getChunkProvider()));
+            chunkList = (Long2ObjectMap<Chunk>) typeOfField.cast(f.get(worldClient.getChunkProvider()));
         } catch (Exception e) {
             System.out.println("Exception happened getting chunk list !");
             System.out.println("This is fine if it happens 1x as that's how it seems to be with Forge.");
