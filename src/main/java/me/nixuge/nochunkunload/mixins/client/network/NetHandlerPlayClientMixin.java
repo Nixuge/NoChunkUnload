@@ -97,6 +97,9 @@ public class NetHandlerPlayClientMixin {
 
     public boolean isChunkUnloaded(int chunkX, int chunkZ) {
         Long2ObjectMap<Chunk> loadedChunks = ChunkProvider.getChunkList();
+        if (loadedChunks == null)
+            return true;
+        
 
         for (Chunk chunk_ : loadedChunks.values()) {
             if (chunk_.xPosition == chunkX &&

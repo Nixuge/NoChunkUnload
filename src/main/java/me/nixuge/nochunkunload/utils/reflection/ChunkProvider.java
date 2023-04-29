@@ -39,10 +39,10 @@ public class ChunkProvider {
             Field f = ReflectionUtils.findField(typeOfObject, typeOfField); // Cached anyways
             chunkList = (Long2ObjectMap<Chunk>) typeOfField.cast(f.get(worldClient.getChunkProvider()));
         } catch (Exception e) {
-            System.out.println("Exception happened getting chunk list !");
-            System.out.println("This is fine if it happens 1x as that's how it seems to be with Forge.");
-            System.out.println("However, is this is spammed in your console, there's a big issue");
-            System.out.println("in which case you should report the issue on github.");
+            System.out.println("Exception happened getting chunk list. This is normal when the world first loads.");
+            // System.out.println("This is fine if it happens 1x as that's how it seems to be with Forge.");
+            // System.out.println("However, is this is spammed in your console, there's a big issue");
+            // System.out.println("in which case you should report the issue on github.");
         }
         
 		return chunkList;
