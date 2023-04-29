@@ -10,7 +10,6 @@ import me.nixuge.nochunkunload.command.commands.ToggleOn;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.NoUnloadChunks;
 import me.nixuge.nochunkunload.command.commands.UnloadChunks.UnloadChunks;
 import me.nixuge.nochunkunload.config.Cache;
-import me.nixuge.nochunkunload.utils.packet.PacketUtils;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
@@ -40,7 +39,6 @@ public class McMod {
     private static McMod instance;
 
     private final Cache cache = new Cache();
-    private final PacketUtils packetUtils = new PacketUtils();
     private Configuration configuration;
     private String configDirectory;
 

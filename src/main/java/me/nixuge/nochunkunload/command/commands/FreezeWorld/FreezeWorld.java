@@ -5,7 +5,7 @@ import me.nixuge.nochunkunload.MessageBuilder;
 import me.nixuge.nochunkunload.command.AbstractCommand;
 import me.nixuge.nochunkunload.config.Cache;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +30,10 @@ public class FreezeWorld extends AbstractCommand {
     @Override
     public void onCommand(final ICommandSender sender, final String[] args) {
         if (this.cache.isWorldFrozen()) {
-            this.tell(new MessageBuilder("World already frozen", EnumChatFormatting.GRAY));
+            this.tell(new MessageBuilder("World already frozen", TextFormatting.GRAY));
         } else {
             cache.setWorldFrozen(true);
-            this.tell(new MessageBuilder("World now frozen.", EnumChatFormatting.GRAY));
+            this.tell(new MessageBuilder("World now frozen.", TextFormatting.GRAY));
         }
     }
 }

@@ -5,7 +5,7 @@ import me.nixuge.nochunkunload.config.Cache;
 import me.nixuge.nochunkunload.MessageBuilder;
 import me.nixuge.nochunkunload.command.AbstractCommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +31,11 @@ public class UnloadChunks extends AbstractCommand {
     @Override
     public void onCommand(final ICommandSender sender, final String[] args) {
         if (this.cache.areChunksUnloadable()) {
-            this.tell(new MessageBuilder("Chunks are already unloadable.", EnumChatFormatting.GRAY));
+            this.tell(new MessageBuilder("Chunks are already unloadable.", TextFormatting.GRAY));
         } else {
             this.cache.setChunksUnloadable(true);
 
-            this.tell(new MessageBuilder("Chunks are now unloadable again.", EnumChatFormatting.GRAY));
+            this.tell(new MessageBuilder("Chunks are now unloadable again.", TextFormatting.GRAY));
         }
     }
 }
